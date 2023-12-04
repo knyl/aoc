@@ -8,13 +8,11 @@ type EngineSchematic = Map[(Int, Int), Char]
 type SymbolMatchingFunction = ((Int, Int), EngineSchematic) => Option[(Int, Int)]
 
 def pt1(input: List[String]): Long =
-  val engineParts = findEngineParts(getSymbolPosition, input)
-  engineParts.map(_._1).sum
+  findEngineParts(getSymbolPosition, input).map(_._1).sum
 
 def pt2(input: List[String]): Long =
   val engineParts = findEngineParts(getGearPosition, input)
-  engineParts.groupBy(_._2).filter(_._2.length > 1)
-    .map(_._2.map(_._1).product).sum
+  engineParts.groupBy(_._2).filter(_._2.length > 1).map(_._2.map(_._1).product).sum
 
 def findEngineParts(symbolMatcher: SymbolMatchingFunction, input: List[String]): List[(Long, (Int, Int))] =
   val schematic = parseToMap(input)
@@ -39,12 +37,10 @@ def getPartOrSymbol(positions: Seq[(Int, Int)], schematic: EngineSchematic): Opt
   positions.headOption.flatMap(schematic.get)
 
 def getGearPosition(tuple: (Int, Int), schematic: EngineSchematic): Option[(Int, Int)] =
-  val adjacentKeys = getAdjacentKeys(tuple)
-  adjacentKeys.find(schematic.getOrElse(_, '.') == '*')
+  getAdjacentKeys(tuple).find(schematic.getOrElse(_, '.') == '*')
 
 def getSymbolPosition(tuple: (Int, Int), schematic: EngineSchematic): Option[(Int, Int)] =
-  val adjacentKeys = getAdjacentKeys(tuple)
-  adjacentKeys.find(isSymbol(_, schematic))
+  getAdjacentKeys(tuple).find(isSymbol(_, schematic))
 
 def isSymbol(key: (Int, Int), schematic: EngineSchematic): Boolean =
   val part = schematic.getOrElse(key, '.')
