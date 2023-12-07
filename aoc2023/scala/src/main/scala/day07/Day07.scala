@@ -59,7 +59,7 @@ def getStrength(cards: Cards): Strength =
   else if isFourOfAKind(cardsGrouped, jokers) then Strength.FourOfAKind
   else if isFullHouse(cardsGrouped, jokers) then Strength.FullHouse
   else if isThreeOfAKind(cardsGrouped, jokers) then Strength.ThreeOfAKind
-  else if isTwoPair(cardsGrouped, jokers) then Strength.TwoPair
+  else if isTwoPair(cardsGrouped) then Strength.TwoPair
   else if isPair(cardsGrouped, jokers) then Strength.OnePair
   else Strength.HighCard
 
@@ -79,8 +79,8 @@ def isFullHouse(cards: List[Cards], jokers: Int = 0): Boolean =
 def isThreeOfAKind(cards: List[Cards], jokers: Int = 0): Boolean =
   cards.exists(_.length == 3) || (jokers == 1 && isPair(cards)) || jokers == 2
 
-def isTwoPair(cards: List[Cards], jokers: Int = 0): Boolean =
-  cards.count(_.length == 2) == 2 || (jokers == 1 && isPair(cards)) || jokers == 2
+def isTwoPair(cards: List[Cards]): Boolean =
+  cards.count(_.length == 2) == 2
 
 def isPair(cards: List[Cards], jokers: Int = 0): Boolean =
   cards.exists(_.length == 2) || jokers == 1
