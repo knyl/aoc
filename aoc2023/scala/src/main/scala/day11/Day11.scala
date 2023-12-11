@@ -1,28 +1,32 @@
 package day11
 
+import util.manhattan_distance
+
+import scala.annotation.tailrec
 import scala.io.Source
 
+type Galaxies = List[(Long, Long)]
+
 def galaxyDistances(lines: List[String], empty: Int): BigInt =
-  val galaxies = parseInput(lines, empty)
-  val galaxyPairs = galaxies.combinations(2).toList
-  galaxyPairs.map(l => (l.head, l.last)).map(distance).sum
-
-def distance(g1: (BigInt, BigInt), g2: (BigInt, BigInt)): BigInt =
-  (g1._1 - g2._1).abs + (g1._2 - g2._2).abs
-
-def parseInput(lines: List[String], empty: Int): List[(BigInt, BigInt)] =
   val emptyColumns = lines.transpose.zipWithIndex.filter(_._1.forall(_ == '.')).map(_._2)
-  var y = 0
-  var galaxies: List[(Int, Int)] = List()
-  for line <- lines yield
-    if line.exists(_ != '.') then
-      var x = 0
-      for (c, i) <- line.toCharArray.zipWithIndex yield
-        if c == '#' then galaxies = (x, y) :: galaxies
-        if emptyColumns.contains(i) then x += empty else x += 1
-      y += 1
-    else y += empty
-  galaxies.map(p => (BigInt(p._1), BigInt(p._2)))
+  val galaxies = parseLines(lines, emptyColumns, empty).map(p => (BigInt(p._1), BigInt(p._2)))
+  val galaxyPairs = galaxies.combinations(2).toList
+  galaxyPairs.map(l => (l.head, l.last)).map(manhattan_distance).sum
+
+@tailrec
+def parseLines(lines: List[String], emptyColumns: List[Int], emptyCount: Int, row: Int = 0, galaxies: Galaxies = List()): Galaxies = lines.headOption match
+  case None => galaxies
+  case Some(line) if line.exists(_ == '#') =>
+    val newGalaxies = parseRow(line.zipWithIndex, emptyColumns, emptyCount, row)
+    parseLines(lines.tail, emptyColumns, emptyCount, row + 1, galaxies ++ newGalaxies)
+  case Some(_) => parseLines(lines.tail, emptyColumns, emptyCount, row + emptyCount, galaxies)
+
+@tailrec
+def parseRow(line: Seq[(Char, Int)], emptyColumns: List[Int], emptyCount: Int, row: Int, column: Int = 0, galaxies: Galaxies = List()): Galaxies = line.headOption match
+  case None => galaxies
+  case Some(('#', _)) => parseRow(line.tail, emptyColumns, emptyCount, row, column + 1, (column, row) :: galaxies)
+  case Some((_, i)) if emptyColumns.contains(i) => parseRow(line.tail, emptyColumns, emptyCount, row, column + emptyCount, galaxies)
+  case _ => parseRow(line.tail, emptyColumns, emptyCount, row, column + 1, galaxies)
 
 @main
 def main(): Unit =

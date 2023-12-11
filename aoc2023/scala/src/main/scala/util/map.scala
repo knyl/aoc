@@ -1,5 +1,7 @@
 package util
 
+import scala.math.Numeric.Implicits.infixNumericOps
+
 type Pos = (Int, Int)
 
 class Map2D[V](val map: Map[Pos, V], val default: V):
@@ -25,3 +27,6 @@ def parseMap[V](lines: List[String], parseFun: Char => V, default: V): Map2D[V] 
     }
   }.toMap
   Map2D(map, default)
+
+def manhattan_distance[T](p1: (T, T), p2: (T, T))(implicit num: Numeric[T]): T =
+  (p1._1 - p2._1).abs + (p1._2 - p2._2).abs
