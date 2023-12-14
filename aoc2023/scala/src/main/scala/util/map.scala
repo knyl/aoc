@@ -4,7 +4,8 @@ import scala.math.Numeric.Implicits.infixNumericOps
 
 type Pos = (Int, Int)
 
-class Map2D[V](val map: Map[Pos, V], val default: V):
+class Map2D[V](val map: Map[Pos, V], val default: V, val width: Int, val height: Int):
+  def this(map: Map[Pos, V], default: V) = this(map, default, map.maxBy(_._1._1)._1._1, map.maxBy(_._1._2)._1._2)
   def apply(pos: Pos): V = map.getOrElse(pos, default)
 
 
@@ -25,8 +26,10 @@ def parseMap[V](lines: List[String], parseFun: Char => V, default: V): Map2D[V] 
     line.zipWithIndex.map { (c, x) =>
       (x, y) -> parseFun(c)
     }
-  }.toMap
-  Map2D(map, default)
+  }.toMap.filter(_._2 != default)
+  val width = lines.headOption.map(_.length).getOrElse(0)
+  val height = lines.length
+  Map2D(map, default, width, height)
 
 def manhattan_distance[T](p1: (T, T), p2: (T, T))(implicit num: Numeric[T]): T =
   (p1._1 - p2._1).abs + (p1._2 - p2._2).abs
