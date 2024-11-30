@@ -5,5 +5,8 @@
 hs_err_pid*
 
 **/scala/target/*
+**/scala/project/*
+**/src/main/resources/*
+**/out/*
 **/*.idea
 **/*.bsp
