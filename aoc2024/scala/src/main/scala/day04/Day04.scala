@@ -4,9 +4,7 @@ import util.{Map2D, parseMap}
 
 import scala.io.Source
 
-type Pos = (Int, Int)
-
-def pattern(x: Int, y: Int) = List(
+def pattern1(x: Int, y: Int) = List(
   List((x + 1, y), (x + 2, y), (x + 3, y)),
   List((x + 1, y - 1), (x + 2, y - 2), (x + 3, y - 3)),
   List((x, y - 1), (x, y - 2), (x, y - 3)),
@@ -17,31 +15,13 @@ def pattern(x: Int, y: Int) = List(
   List((x + 1, y + 1), (x + 2, y + 2), (x + 3, y + 3))
 )
 
+def matchPt1(pattern: String): Boolean = pattern match
+  case "MAS" => true
+  case _ => false
+
 def pattern2(x: Int, y: Int) = List(
   List((x + 1, y - 1), (x - 1, y - 1), (x - 1, y + 1), (x + 1, y + 1))
 )
-
-
-def pt1(data: Map2D[Char]): Int =
-  data.map.map((pos, value) => {
-    if data(pos) != 'X' then 0
-    else
-      val (x, y) = pos
-      val patterns = pattern(x, y)
-      val matches = patterns.map(pattern => pattern.map(data(_)).mkString).count(_ == "MAS")
-      matches
-  }).sum
-
-def pt2(data: Map2D[Char]): Int =
-  data.map.map((pos, value) => {
-    if data(pos) != 'A' then 0
-    else
-      val (x, y) = pos
-      val patterns = pattern2(x, y)
-      val matches = patterns.map(pattern => pattern.map(data(_)).mkString).count(matchPt2)
-      matches
-  }).sum
-
 
 def matchPt2(pattern: String): Boolean = pattern match
   case "MMSS" => true
@@ -50,6 +30,15 @@ def matchPt2(pattern: String): Boolean = pattern match
   case "MSSM" => true
   case _ => false
 
+def solve(data: Map2D[Char], mainChar: Char, pattern: (Int, Int) => List[List[(Int, Int)]], stringMatch: (String) => Boolean): Int =
+  data.map.map {
+    case ((x, y), c) if c == mainChar =>
+      pattern(x, y)
+        .map(p => p.map(data(_)).mkString)
+        .count(stringMatch)
+    case _ => 0
+  }.sum
+
 def parseInput(line: List[String]): Map2D[Char] =
   parseMap(line, identity, '.')
 
@@ -57,5 +46,5 @@ def parseInput(line: List[String]): Map2D[Char] =
 def main(): Unit =
   val input = Source.fromResource("day04.txt").getLines().toList
   val data = parseInput(input)
-  println(s"pt1: ${pt1(data)}")
-  println(s"pt2: ${pt2(data)}")
+  println(s"pt1: ${solve(data, 'X', pattern1, matchPt1)}")
+  println(s"pt2: ${solve(data, 'A', pattern2, matchPt2)}")
