@@ -2,29 +2,38 @@ package util
 
 import scala.math.Numeric.Implicits.infixNumericOps
 
-type Pos = (Int, Int)
+case class Pos(x: Int, y: Int)
 
-class Map2D[V](val map: Map[Pos, V], val default: V, val width: Int, val height: Int):
-  def this(map: Map[Pos, V], default: V) = this(map, default, map.maxBy(_._1._1)._1._1, map.maxBy(_._1._2)._1._2)
+case class Map2D[V](map: Map[Pos, V], default: V, width: Int, height: Int):
+  def this(map: Map[Pos, V], default: V) = this(map, default, map.maxBy(_._1.x)._1.x, map.maxBy(_._1.y)._1.y)
+
   def apply(pos: Pos): V = map.getOrElse(pos, default)
+
+  def update(pos: Pos, v: V): Map2D[V] = Map2D(map.updated(pos, v), default, width, height)
+
+  def allKeys: Set[Pos] =
+    (for (x <- 0 to width; y <- 0 to height) yield Pos(x, y)).toSet
+
+  def isOutOfBounds(pos: Pos): Boolean =
+    pos.x < 0 || pos.x > width || pos.y < 0 || pos.y > height
 
 
 def printMap[V](tiles: Map[Pos, V]): Unit =
-  val xs = tiles.keys.map(_._1)
-  val ys = tiles.keys.map(_._2)
+  val xs = tiles.keys.map(_.x)
+  val ys = tiles.keys.map(_.y)
   val minX = xs.min
   val maxX = xs.max
   val minY = ys.min
   val maxY = ys.max
   for y <- minY to maxY do
     for x <- minX to maxX do
-      print(tiles.getOrElse((x, y), '.'))
+      print(tiles.getOrElse(Pos(x, y), '.'))
     println()
 
 def parseMap[V](lines: List[String], parseFun: Char => V, default: V): Map2D[V] =
   val map = lines.zipWithIndex.flatMap { (line, y) =>
     line.zipWithIndex.map { (c, x) =>
-      (x, y) -> parseFun(c)
+      Pos(x, y) -> parseFun(c)
     }
   }.toMap.filter(_._2 != default)
   val width = lines.headOption.map(_.length).getOrElse(0)

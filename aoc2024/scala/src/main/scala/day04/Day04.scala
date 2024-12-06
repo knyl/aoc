@@ -1,6 +1,6 @@
 package day04
 
-import util.{Map2D, parseMap}
+import util.{Map2D, Pos, parseMap}
 
 import scala.io.Source
 
@@ -30,11 +30,11 @@ def matchPt2(pattern: String): Boolean = pattern match
   case "MSSM" => true
   case _ => false
 
-def solve(data: Map2D[Char], mainChar: Char, pattern: (Int, Int) => List[List[(Int, Int)]], stringMatch: (String) => Boolean): Int =
+def solve(data: Map2D[Char], mainChar: Char, pattern: (Int, Int) => List[List[(Int, Int)]], stringMatch: String => Boolean): Int =
   data.map.map {
-    case ((x, y), c) if c == mainChar =>
+    case (Pos(x, y), c) if c == mainChar =>
       pattern(x, y)
-        .map(p => p.map(data(_)).mkString)
+        .map(p => p.map(f => data(Pos(f._1, f._2))).mkString)
         .count(stringMatch)
     case _ => 0
   }.sum
