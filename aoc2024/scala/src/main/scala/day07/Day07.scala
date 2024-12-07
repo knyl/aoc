@@ -1,9 +1,5 @@
 package day07
 
-import day06.Direction.{EAST, NORTH, SOUTH, WEST}
-import util.{Map2D, Pos, parseMap}
-
-import scala.annotation.tailrec
 import scala.io.Source
 
 def pt1(data: List[(BigInt, List[BigInt])]): BigInt =
