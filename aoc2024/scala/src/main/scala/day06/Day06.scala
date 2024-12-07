@@ -39,7 +39,8 @@ def findGuard(map: Map2D[Char]): Pos =
 
 def pt2(map: Map2D[Char]): Int =
   val guard = findGuard(map)
-  map.allKeys.count { pos =>
+  val visited = visit(map, guard, Set(guard))
+  visited.count { pos =>
     if map(pos) == '#' then false
     else if pos == guard then false
     else detectLoop(map.update(pos, '#'), guard, Set(guard), Set((guard, NORTH)))
