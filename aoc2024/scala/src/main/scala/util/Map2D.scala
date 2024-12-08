@@ -15,15 +15,15 @@ case class Map2D[V](map: Map[Pos, V], default: V, width: Int, height: Int):
     (for (x <- 0 to width; y <- 0 to height) yield Pos(x, y)).toSet
 
   def isOutOfBounds(pos: Pos): Boolean =
-    pos.x < 0 || pos.x > width || pos.y < 0 || pos.y > height
+    pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height
 
 
 def printMap[V](tiles: Map[Pos, V]): Unit =
   val xs = tiles.keys.map(_.x)
   val ys = tiles.keys.map(_.y)
-  val minX = xs.min
+  val minX = 0//xs.min
   val maxX = xs.max
-  val minY = ys.min
+  val minY = 0//ys.min
   val maxY = ys.max
   for y <- minY to maxY do
     for x <- minX to maxX do
