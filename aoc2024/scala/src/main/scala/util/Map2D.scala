@@ -18,13 +18,13 @@ case class Map2D[V](map: Map[Pos, V], default: V, width: Int, height: Int):
     pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height
 
 
-def printMap[V](tiles: Map[Pos, V]): Unit =
+def printMap[V](tiles: Map[Pos, V], xMax: Option[Int] = Option.empty, yMax: Option[Int] = Option.empty): Unit =
   val xs = tiles.keys.map(_.x)
   val ys = tiles.keys.map(_.y)
   val minX = 0//xs.min
-  val maxX = xs.max
+  val maxX = xMax.getOrElse(xs.max)
   val minY = 0//ys.min
-  val maxY = ys.max
+  val maxY = yMax.getOrElse(ys.max)
   for y <- minY to maxY do
     for x <- minX to maxX do
       print(tiles.getOrElse(Pos(x, y), '.'))
