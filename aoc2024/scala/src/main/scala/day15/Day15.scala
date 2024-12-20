@@ -133,7 +133,6 @@ def canMoveHorizontally(map: Map2D[Char], pos: Pos, direction: Direction): Boole
       case '[' | ']' => canMoveHorizontally(map, nextPos, direction)
       case s => throw new Exception(s"Unexpected character: $s at $nextPos")
 
-// 1395208 - too low
 @main
 def main(): Unit =
   val input = Source.fromResource("day15.txt").mkString.split("\n\n").map(_.trim).filterNot(_.isBlank).toList
