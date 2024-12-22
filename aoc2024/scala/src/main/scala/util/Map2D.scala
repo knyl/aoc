@@ -12,7 +12,7 @@ case class Map2D[V](map: Map[Pos, V], default: V, width: Int, height: Int):
   def update(pos: Pos, v: V): Map2D[V] = Map2D(map.updated(pos, v), default, width, height)
 
   def allKeys: Set[Pos] =
-    (for (x <- 0 to width; y <- 0 to height) yield Pos(x, y)).toSet
+    (for (x <- 0 until width; y <- 0 until height) yield Pos(x, y)).toSet
 
   def isOutOfBounds(pos: Pos): Boolean =
     pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height
