@@ -34,6 +34,37 @@ def calculateOutput(gateMap: Map[String, Gate], resultMap: Map[String, Int], out
     val finalResultMap = calculateOutput(gateMap, updatedResultMap, gate.regNameR)
     finalResultMap.updated(output, gate.output(finalResultMap(gate.regNameL), finalResultMap(gate.regNameR)))
 
+def pt2(gates: List[Gate]): Unit =
+  println("----")
+  (0 to 44)
+    .map(String.format("%02d", _))
+    .foreach(printAdder(gates, _))
+  //printAdder(gates, "11") // z11, wpd
+  //printAdder(gates, "15") // skh, jqf
+  //printAdder(gates, "19") // z19, mdd
+  //printAdder(gates, "37") // z37, wts
+  val res = List("z11", "wpd", "skh", "jqf", "z19", "mdd", "z37", "wts").sorted.mkString(",")
+  println(res)
+
+def printAdder(gates: List[Gate], level: String): Unit =
+  val lvl1a = getGate(gates, s"x$level")
+  val lvl1b = getGate(gates, s"y$level")
+  val lvl2a = lvl1a.union(lvl1b).flatMap(g => getGate(gates, g.regNameOut))
+  lvl1b.union(lvl1a).toList.sortBy(_.getClass.getSimpleName).foreach(println)
+  lvl2a.toList.sortBy(_.getClass.getSimpleName).foreach(println)
+  println("----")
+
+def getGate(gates: List[Gate], name: String): Set[Gate] =
+  gates.filter(g => g.regNameL == name || g.regNameR == name).toSet
+
+def getHashKey(gateMap: Map[String, Gate], output: String): String =
+  if !gateMap.contains(output) then output
+  else
+    val gate = gateMap(output)
+    val key1 = getHashKey(gateMap, gate.regNameL)
+    val key2 = getHashKey(gateMap, gate.regNameR)
+    s"${gate.getClass.getSimpleName}($key1, $key2)"
+
 def parseInput(list: List[String]) =
   val dataList = list.head.split("\n").map(_.trim).toList
   val gateList = list.last.split("\n").map(_.trim).toList
@@ -52,69 +83,4 @@ def main(): Unit =
   val input = Source.fromResource("day24.txt").mkString.split("\n\n").map(_.trim).toList
   val (inputs, gates) = parseInput(input)
   println(s"pt1: ${pt1(inputs, gates)}")
-  println(s"pt2: ${}")
-
-val example =
-  """
-    |x00: 1
-    |x01: 1
-    |x02: 1
-    |y00: 0
-    |y01: 1
-    |y02: 0
-    |
-    |x00 AND y00 -> z00
-    |x01 XOR y01 -> z01
-    |x02 OR y02 -> z02
-    |""".stripMargin.split("\n\n").map(_.trim).toList
-
-val example2 =
-  """
-    |x00: 1
-    |x01: 0
-    |x02: 1
-    |x03: 1
-    |x04: 0
-    |y00: 1
-    |y01: 1
-    |y02: 1
-    |y03: 1
-    |y04: 1
-    |
-    |ntg XOR fgs -> mjb
-    |y02 OR x01 -> tnw
-    |kwq OR kpj -> z05
-    |x00 OR x03 -> fst
-    |tgd XOR rvg -> z01
-    |vdt OR tnw -> bfw
-    |bfw AND frj -> z10
-    |ffh OR nrd -> bqk
-    |y00 AND y03 -> djm
-    |y03 OR y00 -> psh
-    |bqk OR frj -> z08
-    |tnw OR fst -> frj
-    |gnj AND tgd -> z11
-    |bfw XOR mjb -> z00
-    |x03 OR x00 -> vdt
-    |gnj AND wpb -> z02
-    |x04 AND y00 -> kjc
-    |djm OR pbm -> qhw
-    |nrd AND vdt -> hwm
-    |kjc AND fst -> rvg
-    |y04 OR y02 -> fgs
-    |y01 AND x02 -> pbm
-    |ntg OR kjc -> kwq
-    |psh XOR fgs -> tgd
-    |qhw XOR tgd -> z09
-    |pbm OR djm -> kpj
-    |x03 XOR y03 -> ffh
-    |x00 XOR y04 -> ntg
-    |bfw OR bqk -> z06
-    |nrd XOR fgs -> wpb
-    |frj XOR qhw -> z04
-    |bqk OR frj -> z07
-    |y03 OR x01 -> nrd
-    |hwm AND bqk -> z03
-    |tgd XOR rvg -> z12
-    |tnw OR pbm -> gnj
-    |""".stripMargin.split("\n\n").map(_.trim).toList
+  println(s"pt2: ${pt2(gates)}")
